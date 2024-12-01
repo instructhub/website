@@ -7,6 +7,7 @@ import AuthPageLayout from "@/components/layout/auth-layout";
 
 import SignupEmailModal from "./signup-email-modal";
 import SignupModal from "./signup-home-page";
+import SignupVerifyModal from "./signup-email-verifymodal";
 
 const SignupLayout = () => {
   const [stage, setStage] = useQueryState("stage");
@@ -38,7 +39,7 @@ const SignupLayout = () => {
           {/* Conditional rendering based on the query parameter */}
           {(!stage || stage === "index") && <SignupModal />}
           {stage === "emailmodal" && <SignupEmailModal />}
-          {stage === "verifymodal" && <SignupEmailModal />}
+          {stage === "verifymodal" && <SignupVerifyModal />}
         </>
       }
     />

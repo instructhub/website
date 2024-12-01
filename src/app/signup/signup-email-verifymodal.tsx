@@ -1,13 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { getCookie } from "cookies-next/client";
 import { useEffect, useState } from "react";
 
 import { Icon } from "@iconify/react";
-import { useRouter } from "next/navigation";
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 
 const SignupVerifyModal = () => {
   const router = useRouter();
@@ -47,7 +47,7 @@ const SignupVerifyModal = () => {
       if (isVerifiedNow) {
         setMessage(t("Auth.signup.email.verify.successful_verify") || "");
         setTimeout(() => {
-            router.push("/login?verify=true");
+          router.push("/login?verify=true");
         }, 2000);
       }
     }, 10 * 1000);
@@ -60,7 +60,7 @@ const SignupVerifyModal = () => {
   }, [router, t]);
 
   const handleResend = async () => {
-    const userID = router.push("userID");
+    const userID = getCookie("userID");
     const resendingToast = toast.loading(
       t("Auth.signup.email.verify.resending_title"),
     );
@@ -77,7 +77,7 @@ const SignupVerifyModal = () => {
 
       if (response.ok) {
         toast.success(t("Auth.signup.email.verify.successful_resend"), {
-            id: resendingToast
+          id: resendingToast,
         });
         return;
       } else {

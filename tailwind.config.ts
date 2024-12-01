@@ -8,6 +8,7 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+
     colors: {
       crust: "rgba(var(--crust))",
       mantle: "rgba(var(--mantle))",
@@ -48,6 +49,19 @@ export default {
       title: "rgba(var(--title))",
     },
     extend: {
+      keyframes: {
+        loading: {
+          from: {
+            transfrom: "rotate(0)",
+          },
+          to: {
+            transform: "rotate(360deg)",
+          },
+        },
+      },
+      animation: {
+        loading: "loading 3s linear Infinite",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

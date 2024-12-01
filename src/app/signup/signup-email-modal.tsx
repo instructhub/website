@@ -32,7 +32,6 @@ const EmailSignupSchema = z
 type EmailSignupForm = z.infer<typeof EmailSignupSchema>;
 
 const SignupEmailModal = () => {
-  console.log(process.env.NEXT_PUBLIC_BACKEND_BASEURL)
   const [stage, setStage] = useQueryState("stage");
 
   const [signupLoading, setSignupLoading] = useState(false);
@@ -51,7 +50,7 @@ const SignupEmailModal = () => {
     try {
       setSignupLoading(true);
       const response = await fetch(
-        `${process.env.VITE_API_BASEURL}/auth/signup`,
+        `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/signup`,
         {
           method: "POST",
           headers: {
@@ -73,10 +72,10 @@ const SignupEmailModal = () => {
       }
 
       if (data.message === "Email already been used") {
-        setError("email", { message: t("Auth.error.email_already_been_used") });
+        setError("email", { message: "Auth.error.email_already_been_used" });
       } else if (data.message === "Username already been used") {
         setError("username", {
-          message: t("Auth.error.username_already_been_used"),
+          message: "Auth.error.username_already_been_used",
         });
       }
     } catch (error) {
@@ -106,10 +105,16 @@ const SignupEmailModal = () => {
               {...register("username")}
               placeholder={t("Auth.username")}
               className="font-semibold"
-              startAdornment={<Icon icon="lucide:user-round" className="text-text w-5 h-5"/>}
+              startAdornment={
+                <Icon icon="lucide:user-round" className="text-text w-5 h-5" />
+              }
               type="text"
             />
-            {errors.username && <p className="pt-1 text-red text-sm">{t(errors.username.message)}</p>}
+            {errors.username && (
+              <p className="pt-1 text-red text-sm">
+                {t(errors.username.message)}
+              </p>
+            )}
           </div>
 
           <div>
@@ -117,10 +122,14 @@ const SignupEmailModal = () => {
               {...register("email")}
               placeholder={t("Auth.email")}
               className="font-semibold"
-              startAdornment={<Icon icon="lucide:mail" className="text-text w-5 h-5"/>}
+              startAdornment={
+                <Icon icon="lucide:mail" className="text-text w-5 h-5" />
+              }
               type="email"
             />
-            {errors.email && <p className="pt-1 text-red text-sm">{t(errors.email.message)}</p>}
+            {errors.email && (
+              <p className="pt-1 text-red text-sm">{t(errors.email.message)}</p>
+            )}
           </div>
 
           <div>
@@ -128,10 +137,19 @@ const SignupEmailModal = () => {
               {...register("password")}
               placeholder={t("Auth.password")}
               className="font-semibold"
-              startAdornment={<Icon icon="lucide:lock-keyhole" className="text-text w-5 h-5"/>}
+              startAdornment={
+                <Icon
+                  icon="lucide:lock-keyhole"
+                  className="text-text w-5 h-5"
+                />
+              }
               type="password"
             />
-            {errors.password && <p className="pt-1 text-red text-sm">{t(errors.password.message)}</p>}
+            {errors.password && (
+              <p className="pt-1 text-red text-sm">
+                {t(errors.password.message)}
+              </p>
+            )}
           </div>
 
           <div>
@@ -139,10 +157,19 @@ const SignupEmailModal = () => {
               {...register("confirmPassword")}
               placeholder={t("Auth.confirm_password")}
               className="font-semibold"
-              startAdornment={<Icon icon="lucide:lock-keyhole" className="text-text w-5 h-5"/>}
+              startAdornment={
+                <Icon
+                  icon="lucide:lock-keyhole"
+                  className="text-text w-5 h-5"
+                />
+              }
               type="password"
             />
-            {errors.confirmPassword && <p className="pt-1 text-red text-sm">{t(errors.confirmPassword.message)}</p>}
+            {errors.confirmPassword && (
+              <p className="pt-1 text-red text-sm">
+                {t(errors.confirmPassword.message)}
+              </p>
+            )}
           </div>
 
           {/*line*/}
@@ -165,7 +192,10 @@ const SignupEmailModal = () => {
           </button>
         </form>
       </div>
-      <a className="mt-4 text-center text-blue font-bold" onClick={() => setStage("index")}>
+      <a
+        className="mt-4 text-center text-blue font-bold"
+        onClick={() => setStage("index")}
+      >
         {t("Auth.signup.email.other_option")}
       </a>
     </div>

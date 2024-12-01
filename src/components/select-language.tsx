@@ -1,10 +1,15 @@
 "use client";
-import { Locale } from "@/i18n/config";
-import { setUserLocale, getUserLocale } from "@/service/locale";
-import { useState, useTransition } from "react";
-import { Select, SelectContent, SelectTrigger, SelectItem } from "./ui/select";
-import { Icon } from "@iconify/react";
+
 import { useLocale } from "next-intl";
+
+import { useState, useTransition } from "react";
+
+import { Icon } from "@iconify/react";
+
+import { Locale, LocaleDetail, localesDetail } from "@/i18n/config";
+import { getUserLocale, setUserLocale } from "@/service/locale";
+
+import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 
 export default function SelectLanguage() {
   const [isPending, startTransition] = useTransition();
@@ -26,8 +31,14 @@ export default function SelectLanguage() {
         />
       </SelectTrigger>
       <SelectContent className="select-none">
-        <SelectItem value="en">English</SelectItem>
-        <SelectItem value="zh-tw">繁體中文</SelectItem>
+        {localesDetail.map((locale: LocaleDetail) => (
+          <SelectItem key={locale.id} value={locale.id}>
+            <div className="flex space-x-1 items-center justify-center">
+              <Icon icon={`circle-flags:${locale.flag}`} />
+              <p>{locale.name}</p>
+            </div>
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
