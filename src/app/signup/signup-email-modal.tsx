@@ -19,7 +19,7 @@ const EmailSignupSchema = z
       .string()
       .min(3, { message: "Auth.error.username_too_short" })
       .max(30, { message: "Auth.error.username_too_long" })
-      .regex(/^[a-zA-Z0-9._]+$/, { message: "Auth.error.username_not_valid" }),
+      .regex(/^[a-z0-9._]+$/, { message: "Auth.error.username_not_valid" }),
     email: z.string().email({ message: "Auth.error.email_not_valid" }),
     password: z.string().min(8, { message: "Auth.error.password_min_length" }),
     confirmPassword: z.string(),

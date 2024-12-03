@@ -5,13 +5,12 @@
     },
     "unit": {
       "sec": "sec"
-    }
+    },
+    "or": "or"
   },
-
   "HomePage": {
     "title": "Hello world!"
   },
-
   "Auth": {
     "google": "Continue with Google",
     "gitlab": "Continue with GitLab",
@@ -29,28 +28,6 @@
       "forgot_your_password": "Forgot your password?",
       "verify_successful": "Verify successful",
       "verify_successful_content": "You have successful verify your email!"
-    },
-    "error": {
-      "please_enter_your_username": "Please enter your username",
-      "username_too_short": "Username too short (> 3)",
-      "username_too_long": "Username too long (< 30)",
-      "username_not_valid": "Username can only have w.",
-      "username_already_been_used": "This username has already been used",
-
-      "please_enter_email": "Please enter your email",
-      "email_already_been_used": "This email has already been used",
-      "error_check_email_verify": "Error while checking email verification",
-      "email_not_valid": "The email address is badly formatted.",
-
-      "please_enter_password": "Please enter your password",
-      "password_min_length": "Your password must have 8 characters or more.",
-      "password_do_not_match": "Confirm password does not match.",
-
-      "login_error": "Email or password is invalid",
-      "try_to_login_first": "Please try logging in first",
-
-      "verify_error": "Verify email failed",
-      "verify_error_content": "Failed verify your email this verify token may expire."
     },
     "signup": {
       "email": {
@@ -75,6 +52,29 @@
       "signup": "Sign up",
       "title": "Let's get started to learn!",
       "already_have_an_account": "Already have an account?"
+    },
+    "error": {
+      "please_enter_your_username": "Please enter your username",
+      "username_too_short": "Username too short (> 3)",
+      "username_too_long": "Username too long (< 30)",
+      "username_not_valid": "Username can only have w.",
+      "username_already_been_used": "This username has already been used",
+      "please_enter_email": "Please enter your email",
+      "email_already_been_used": "This email has already been used",
+      "error_check_email_verify": "Error while checking email verification",
+      "email_not_valid": "The email address is badly formatted.",
+      "please_enter_password": "Please enter your password",
+      "password_min_length": "Your password must have 8 characters or more.",
+      "password_do_not_match": "Confirm password does not match.",
+      "login_error": "Email or password is invalid",
+      "try_to_login_first": "Please try logging in first",
+      "verify_error": "Verify email failed",
+      "verify_error_content": "Failed verify your email this verify token may expire."
+    },
+    "verify": {
+      "verify_successful": "Verify successful",
+      "verify_failed": "Verify failed"
     }
+
   }
 }

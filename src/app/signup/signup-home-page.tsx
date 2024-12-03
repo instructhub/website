@@ -1,8 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { redirect } from "next/navigation";
 import { useQueryState } from "nuqs";
 
+import { getCookie } from "cookies-next/client";
 import { useState } from "react";
 import { ClassNameValue } from "tailwind-merge";
 
@@ -38,12 +40,10 @@ const SignupButtonData: SignupButton[] = [
 
 const SignupModal = () => {
   const [stage, setStage] = useQueryState("stage");
-  const [openPopupStatus, setOpenPopupStatus] = useState(false);
   const t = useTranslations("Auth");
 
   // Handle opening the popup for OAuth
   const openPopup = (authUrl: string) => {
-    setOpenPopupStatus(true);
     const width = 500;
     const height = 600;
     const left = (window.screen.width - width) / 2;
@@ -58,10 +58,13 @@ const SignupModal = () => {
     const checkConnect = setInterval(() => {
       try {
         if (popup?.location?.href.includes("callback")) {
-          setTimeout(() => {
-            popup.close();
-            setOpenPopupStatus(false);
-          }, 2000);
+          popup.close();
+          // Check if cookie are set and redirect
+          const accessToken = getCookie("access_token");
+          if (accessToken) {
+            // TODO: redirect to browser page or personal page
+            redirect("/");
+          }
           clearInterval(checkConnect);
         }
       } catch (e) {}
@@ -84,7 +87,6 @@ const SignupModal = () => {
         {SignupButtonData.map((button) => (
           <button
             key={button.href}
-            disabled={openPopupStatus}
             className={`w-full h-10 flex justify-center items-center gap-x-2 rounded-lg cursor-pointer font-bold text-white ${button.class}`}
             onClick={() =>
               openPopup(
@@ -104,7 +106,6 @@ const SignupModal = () => {
       {/* Email Signup */}
       <div className="px-2">
         <button
-          disabled={openPopupStatus}
           className="w-full h-10 flex justify-center items-center gap-x-2 rounded-lg cursor-pointer font-bold bg-surface1 hover:bg-surface1/80"
           onClick={handleEmailSignup}
         >

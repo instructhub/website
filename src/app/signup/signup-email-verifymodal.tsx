@@ -19,7 +19,7 @@ const SignupVerifyModal = () => {
     try {
       const response = await fetch(endpoint);
       const data = await response.json();
-      return data.data.verify;
+      return data.result.verify;
     } catch (error) {
       console.error("Verification failed:", error);
       return false;
@@ -47,20 +47,14 @@ const SignupVerifyModal = () => {
       if (isVerifiedNow) {
         setMessage(t("Auth.signup.email.verify.successful_verify") || "");
         setTimeout(() => {
-          router.push("/login?verify=true");
+          // TODO: redirect to browser page or personal page
+          router.push("/");
         }, 2000);
       }
     }, 10 * 1000);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(verifyInterval);
-      setMessage(t("Auth.error.error_check_email_verify") || "");
-    };
-  }, [router, t]);
+  }, []);
 
   const handleResend = async () => {
-    const userID = getCookie("userID");
     const resendingToast = toast.loading(
       t("Auth.signup.email.verify.resending_title"),
     );
@@ -68,7 +62,7 @@ const SignupVerifyModal = () => {
     try {
       setReciprocal(-1);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/email/verify/resend/${userID}`,
+        `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/email/verify/resend`,
         { method: "POST" },
       );
 
