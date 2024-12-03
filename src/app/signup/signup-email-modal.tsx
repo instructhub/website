@@ -13,21 +13,19 @@ import { Icon } from "@iconify/react";
 
 import { Input } from "@/components/ui/input";
 
-const EmailSignupSchema = z
-  .object({
-    username: z
-      .string()
-      .min(3, { message: "Auth.error.username_too_short" })
-      .max(30, { message: "Auth.error.username_too_long" })
-      .regex(/^[a-z0-9._]+$/, { message: "Auth.error.username_not_valid" }),
-    email: z.string().email({ message: "Auth.error.email_not_valid" }),
-    password: z.string().min(8, { message: "Auth.error.password_min_length" }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Auth.error.password_do_not_match",
-    path: ["confirmPassword"],
-  });
+const EmailSignupSchema = z.object({
+  display_name: z
+    .string()
+    .min(1, { message: "Auth.error.display_name_is_required" })
+    .max(32, { message: "Auth.error.display_name_too_long" }),
+  username: z
+    .string()
+    .min(3, { message: "Auth.error.username_too_short" })
+    .max(32, { message: "Auth.error.username_too_long" })
+    .regex(/^[a-z0-9._]+$/, { message: "Auth.error.username_not_valid" }),
+  email: z.string().email({ message: "Auth.error.email_not_valid" }),
+  password: z.string().min(8, { message: "Auth.error.password_min_length" }),
+});
 
 type EmailSignupForm = z.infer<typeof EmailSignupSchema>;
 
@@ -102,11 +100,28 @@ const SignupEmailModal = () => {
         <form className="grid gap-3" onSubmit={handleSubmit(handleSignup)}>
           <div>
             <Input
+              {...register("display_name")}
+              placeholder={t("Auth.display_name")}
+              className="font-semibold"
+              startAdornment={
+                <Icon icon="lucide:user-round" className="text-text w-5 h-5" />
+              }
+              type="text"
+            />
+            {errors.display_name && (
+              <p className="pt-1 text-red text-sm">
+                {t(errors.display_name.message)}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Input
               {...register("username")}
               placeholder={t("Auth.username")}
               className="font-semibold"
               startAdornment={
-                <Icon icon="lucide:user-round" className="text-text w-5 h-5" />
+                <Icon icon="lucide:id-card" className="text-text w-5 h-5" />
               }
               type="text"
             />
@@ -148,26 +163,6 @@ const SignupEmailModal = () => {
             {errors.password && (
               <p className="pt-1 text-red text-sm">
                 {t(errors.password.message)}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <Input
-              {...register("confirmPassword")}
-              placeholder={t("Auth.confirm_password")}
-              className="font-semibold"
-              startAdornment={
-                <Icon
-                  icon="lucide:lock-keyhole"
-                  className="text-text w-5 h-5"
-                />
-              }
-              type="password"
-            />
-            {errors.confirmPassword && (
-              <p className="pt-1 text-red text-sm">
-                {t(errors.confirmPassword.message)}
               </p>
             )}
           </div>
