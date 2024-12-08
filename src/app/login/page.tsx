@@ -24,7 +24,7 @@ const LoginLayout = () => {
       }
       Button={
         <a href="/signup">
-          <button className="px-4 py-1 rounded-lg bg-transparent border-surface1 border-2 hover:bg-surface1 font-bold">
+          <button className="px-4 py-1 rounded-lg bg-transparent border-surface1 border-2 hover:bg-surface1 font-bold transition-ease-in-out">
             {t("signup.signup")}
           </button>
         </a>

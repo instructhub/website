@@ -10,7 +10,7 @@ import SignupModal from "./signup-home-page";
 import SignupVerifyModal from "./signup-email-verifymodal";
 
 const SignupLayout = () => {
-  const [stage, setStage] = useQueryState("stage");
+  const [stage, ] = useQueryState("stage");
 
   const t = useTranslations("Auth");
 
@@ -29,7 +29,7 @@ const SignupLayout = () => {
       }
       Button={
         <a href="/login">
-          <button className="px-4 py-1 rounded-lg bg-transparent border-surface1 border-2 hover:bg-surface1 font-bold">
+          <button className="px-4 py-1 rounded-lg bg-transparent border-surface1 border-2 hover:bg-surface1 font-bold transition-ease-in-out">
             {t("login.login")}
           </button>
         </a>

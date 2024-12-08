@@ -8,6 +8,7 @@ import { getCookie } from "cookies-next/client";
 import { useEffect, useState } from "react";
 
 import { Icon } from "@iconify/react";
+import API_URLS from "@/lib/api-urls";
 
 const SignupVerifyModal = () => {
   const router = useRouter();
@@ -41,7 +42,7 @@ const SignupVerifyModal = () => {
       }
 
       const isVerifiedNow = await verify(
-        `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/email/verify/check/${userID}`,
+        API_URLS.AUTH.CHECK_EMAIL_VERIFY(userID),
       );
 
       if (isVerifiedNow) {
@@ -62,7 +63,7 @@ const SignupVerifyModal = () => {
     try {
       setReciprocal(-1);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/email/verify/resend`,
+        API_URLS.AUTH.RESEND_VERIFY_EMAIL,
         { method: "POST" },
       );
 
@@ -119,7 +120,7 @@ const SignupVerifyModal = () => {
         </div>
 
         {message === "" ? (
-          <button className="w-full h-10 flex justify-center items-center gap-2 rounded-lg cursor-pointer font-bold text-surface0 bg-green hover:bg-green/80">
+          <button className="w-full h-10 flex justify-center items-center gap-2 rounded-lg cursor-pointer font-bold text-surface0 bg-green hover:bg-green/80 transition-ease-in-out">
             <Icon
               icon="lucide:loader"
               className="text-xl animate-loading text-surface0"

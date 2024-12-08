@@ -2,17 +2,17 @@
 
 import { useLocale } from "next-intl";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 
 import { Icon } from "@iconify/react";
 
 import { Locale, LocaleDetail, localesDetail } from "@/i18n/config";
-import { getUserLocale, setUserLocale } from "@/service/locale";
+import { setUserLocale } from "@/service/locale";
 
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 
 export default function SelectLanguage() {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const locale = useLocale();
 
   function onChange(value: string) {

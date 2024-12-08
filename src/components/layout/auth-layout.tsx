@@ -2,6 +2,7 @@
 import React from "react";
 import { ToggleTheme } from "../toggle-theme";
 import SelectLanguage from "../select-language";
+import Image from "next/image";
 
 interface AuthPageLayoutProps {
   Button: React.ReactNode;
@@ -16,9 +17,11 @@ const AuthPageLayout: React.FC<AuthPageLayoutProps> = ({ Button, Modal, Footer }
         {/* Navigation Bar */}
         <nav className="grid sticky top-0 px-4 py-2 items-center grid-cols-2 z-10">
           <div>
-            <img
+            <Image
               src="/logo.png"
               alt="InstructHub Logo"
+              height={40}
+              width={40}
               className="w-10 h-10"
             />
           </div>

@@ -5,10 +5,11 @@ import { redirect } from "next/navigation";
 import { useQueryState } from "nuqs";
 
 import { getCookie } from "cookies-next/client";
-import { useState } from "react";
 import { ClassNameValue } from "tailwind-merge";
 
 import { Icon } from "@iconify/react";
+
+import API_URLS from "@/lib/api-urls";
 
 interface SignupButton {
   href: string;
@@ -39,7 +40,7 @@ const SignupButtonData: SignupButton[] = [
 ];
 
 const SignupModal = () => {
-  const [stage, setStage] = useQueryState("stage");
+  const [, setStage] = useQueryState("stage");
   const t = useTranslations("Auth");
 
   // Handle opening the popup for OAuth
@@ -56,18 +57,16 @@ const SignupModal = () => {
     );
 
     const checkConnect = setInterval(() => {
-      try {
-        if (popup?.location?.href.includes("callback")) {
-          popup.close();
-          // Check if cookie are set and redirect
-          const accessToken = getCookie("access_token");
-          if (accessToken) {
-            // TODO: redirect to browser page or personal page
-            redirect("/");
-          }
-          clearInterval(checkConnect);
+      if (popup?.location?.href.includes("callback")) {
+        popup.close();
+        // Check if cookie are set and redirect
+        const accessToken = getCookie("access_token");
+        if (accessToken) {
+          // TODO: redirect to browser page or personal page
+          redirect("/");
         }
-      } catch (e) {}
+        clearInterval(checkConnect);
+      }
     }, 100);
   };
 
@@ -87,12 +86,8 @@ const SignupModal = () => {
         {SignupButtonData.map((button) => (
           <button
             key={button.href}
-            className={`w-full h-10 flex justify-center items-center gap-x-2 rounded-lg cursor-pointer font-bold text-white ${button.class}`}
-            onClick={() =>
-              openPopup(
-                `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/oauth/${button.href}`,
-              )
-            }
+            className={`w-full h-10 flex justify-center items-center gap-x-2 rounded-lg cursor-pointer font-bold text-white ${button.class} transition-ease-in-out`}
+            onClick={() => openPopup(API_URLS.AUTH.OAUTH(button.href))}
           >
             {button.icon}
             {t(button.message)}
@@ -106,7 +101,7 @@ const SignupModal = () => {
       {/* Email Signup */}
       <div className="px-2">
         <button
-          className="w-full h-10 flex justify-center items-center gap-x-2 rounded-lg cursor-pointer font-bold bg-surface1 hover:bg-surface1/80"
+          className="w-full h-10 flex justify-center items-center gap-x-2 rounded-lg cursor-pointer font-bold bg-surface1 hover:bg-surface1/80 transition-ease-in-out"
           onClick={handleEmailSignup}
         >
           <Icon icon="lucide:mail" className="text-lg" />

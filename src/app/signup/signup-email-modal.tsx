@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Icon } from "@iconify/react";
 
 import { Input } from "@/components/ui/input";
+import API_URLS from "@/lib/api-urls";
 
 const EmailSignupSchema = z.object({
   display_name: z
@@ -30,7 +31,7 @@ const EmailSignupSchema = z.object({
 type EmailSignupForm = z.infer<typeof EmailSignupSchema>;
 
 const SignupEmailModal = () => {
-  const [stage, setStage] = useQueryState("stage");
+  const [, setStage] = useQueryState("stage");
 
   const [signupLoading, setSignupLoading] = useState(false);
   const t = useTranslations();
@@ -48,7 +49,7 @@ const SignupEmailModal = () => {
     try {
       setSignupLoading(true);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/signup`,
+        API_URLS.AUTH.SIGNUP,
         {
           method: "POST",
           headers: {
@@ -172,7 +173,7 @@ const SignupEmailModal = () => {
 
           <button
             type="submit"
-            className="w-full h-10 flex justify-center items-center gap-2 rounded-lg cursor-pointer font-bold text-surface0 bg-green hover:bg-green/80 disabled:cursor-not-allowed"
+            className="w-full h-10 flex justify-center items-center gap-2 rounded-lg cursor-pointer font-bold text-surface0 bg-green hover:bg-green/80 disabled:cursor-not-allowed transition-ease-in-out"
             disabled={signupLoading}
           >
             {signupLoading ? (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Icon } from "@iconify/react";
 
 import { Input } from "@/components/ui/input";
+import API_URLS from "@/lib/api-urls";
 
 interface LoginButton {
   href: string;
@@ -53,7 +54,7 @@ type LoginForm = z.infer<typeof LoginSchema>;
 
 const LoginModal = () => {
   const t = useTranslations();
-  const [verify, setVerify] = useQueryState("verify");
+  const [verify] = useQueryState("verify");
   const router = useRouter();
 
   const [loginLoading, setLoginLoading] = useState(false);
@@ -98,30 +99,26 @@ const LoginModal = () => {
     );
 
     const checkConnect = setInterval(() => {
-      try {
-        if (popup?.location?.href.includes("callback")) {
-          popup.close();
-          // Check if cookie are set and redirect
-          const accessToken = getCookie("access_token");
-          if (accessToken) {
-            router.push("/");
-          }
+      if (popup?.location?.href.includes("callback")) {
+        popup.close();
+        // Check if cookie are set and redirect
+        const accessToken = getCookie("access_token");
+        if (accessToken) {
+          router.push("/");
         }
-      } catch (e) {}
+        clearInterval(checkConnect);
+      }
     }, 100);
   };
 
   const handleLogin: SubmitHandler<LoginForm> = async (values) => {
     try {
       setLoginLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(values),
-        },
-      );
+      const response = await fetch(API_URLS.AUTH.LOGIN, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
 
       setLoginLoading(false);
 
@@ -169,12 +166,8 @@ const LoginModal = () => {
           {LoginButtonData.map((button) => (
             <button
               key={button.href}
-              className={`w-full h-10 flex justify-center items-center gap-x-2 rounded-lg cursor-pointer font-bold text-white ${button.class}`}
-              onClick={() =>
-                openPopup(
-                  `${process.env.NEXT_PUBLIC_API_BASEURL}/auth/oauth/${button.href}`,
-                )
-              }
+              className={`w-full h-10 flex justify-center items-center gap-x-2 rounded-lg cursor-pointer font-bold text-white ${button.class} transition-ease-in-out`}
+              onClick={() => openPopup(API_URLS.AUTH.OAUTH(button.href))}
             >
               {button.icon}
               {t(button.message)}
@@ -228,7 +221,7 @@ const LoginModal = () => {
           </div>
           <button
             type="submit"
-            className="w-full h-10 flex justify-center items-center rounded-lg text-surface0 bg-green hover:bg-green/80 font-semibold"
+            className="w-full h-10 flex justify-center items-center rounded-lg text-surface0 bg-green hover:bg-green/80 font-semibold transition-ease-in-out"
             disabled={loginLoading}
           >
             {loginLoading ? (
