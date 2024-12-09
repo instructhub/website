@@ -6,17 +6,6 @@ import Image from "next/image";
 import { thumbs } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
 
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
-import API_URLS from "@/lib/api-urls";
-
 import { User } from "./header";
 
 // import SelectLanguage from "../select-language";

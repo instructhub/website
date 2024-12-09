@@ -5,7 +5,9 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
+import "@/css/tiptap.css"
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,8 +37,10 @@ export default async function RootLayout({
           {/* I18n provider */}
           <NextIntlClientProvider messages={messages}>
             {/* Nuqs for Type-safe search params */}
-            <NuqsAdapter>{children}</NuqsAdapter>
-            {/* Shadcn toaster */}
+            <NuqsAdapter>
+              <TooltipProvider>{children}</TooltipProvider>
+              {/* Shadcn toaster */}
+            </NuqsAdapter>
             <Toaster />
           </NextIntlClientProvider>
         </ThemeProvider>
