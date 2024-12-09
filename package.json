@@ -10,8 +10,11 @@
     "format": "prettier-eslint \"src/**/*.js\""
   },
   "dependencies": {
+    "@dicebear/collection": "^9.2.2",
+    "@dicebear/core": "^9.2.2",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
+    "@radix-ui/react-menubar": "^1.1.2",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "class-variance-authority": "^0.7.1",

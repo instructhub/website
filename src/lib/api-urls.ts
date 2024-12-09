@@ -21,6 +21,7 @@ export const API_URLS = {
   },
   USER: {
     CHECK_LOGIN: `${BASE_URL}/users/check/login`,
+    GET_DATA: `${BASE_URL}/users/personal/profile`,
   },
 };
 
