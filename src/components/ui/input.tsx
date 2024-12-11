@@ -26,7 +26,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col">
         {label && (
-          <label className="mb-1 text-sm  text-foreground">{label}</label>
+          <label className="mb-1 text-sm text-foreground">{label}</label>
         )}
         <div
           className={cn(
@@ -42,7 +42,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             className={cn(
-              "flex-1 px-3 py-2 placeholder:text-foreground focus:outline-none disabled:opacity-50 rounded-lg bg-surface0",
+              "flex-1 px-3 py-2 placeholder:text-subtext0 focus:outline-none disabled:opacity-50 rounded-lg bg-surface0",
               {
                 "pl-0": startAdornment,
               },

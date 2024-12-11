@@ -23,6 +23,9 @@ export const API_URLS = {
     CHECK_LOGIN: `${BASE_URL}/users/check/login`,
     GET_DATA: `${BASE_URL}/users/personal/profile`,
   },
+  COURSES: {
+    CREATE: `${BASE_URL}/courses/new`,
+  }
 };
 
 export default API_URLS;

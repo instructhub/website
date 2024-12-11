@@ -4,10 +4,12 @@ import { getLocale, getMessages } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import "@/css/tiptap.css";
 
-import "@/css/tiptap.css"
+import { AppSidebar } from "./courses/manage/edit/edit-sidebar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -41,6 +43,7 @@ export default async function RootLayout({
               <TooltipProvider>{children}</TooltipProvider>
               {/* Shadcn toaster */}
             </NuqsAdapter>
+
             <Toaster />
           </NextIntlClientProvider>
         </ThemeProvider>
