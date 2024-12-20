@@ -26,7 +26,7 @@ export default async function Header() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
-  let data = await fetch(API_URLS.USER.GET_DATA, {
+  let response = await fetch(API_URLS.USER.GET_DATA, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -35,7 +35,7 @@ export default async function Header() {
     },
   });
 
-  const userData: User = (await data.json()).result;
+  const userData: User = (await response.json())?.result;
 
   return <HeaderClientSide user={userData}></HeaderClientSide>;
 }

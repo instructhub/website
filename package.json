@@ -13,6 +13,7 @@
     "@dicebear/collection": "^9.2.2",
     "@dicebear/core": "^9.2.2",
     "@hookform/resolvers": "^3.9.1",
+    "@next/codemod": "15.1.0",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-context-menu": "^2.2.2",
     "@radix-ui/react-dialog": "^1.1.2",

@@ -25,6 +25,7 @@ export const API_URLS = {
   },
   COURSES: {
     CREATE: `${BASE_URL}/courses/new`,
+    GET: (courseID: string) =>  `${BASE_URL}/courses/${courseID}`
   }
 };
 

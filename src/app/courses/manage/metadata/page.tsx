@@ -5,8 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 
 export default function CoursesHomePage() {
+    
 
-    return (
-      <div>test</div>
-    );
+    return <></>;
 }
