@@ -2,7 +2,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import API_URLS from "@/lib/api-urls";
 import { Course, mapCourse } from "@/types/courses";
 
-import CourseClientPage from "./edit-page";
+import CourseClientPage from "./_components/edit-page";
 
 export default async function CoursePage({
   params,
