@@ -54,7 +54,6 @@ export interface CourseImage {
 
 
 export function mapCourse(json: any): Course {
-  console.log(json)
   return {
     id: json.id,
     creator: json.creator,

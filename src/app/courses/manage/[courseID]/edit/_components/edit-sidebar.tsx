@@ -8,9 +8,6 @@ import { Icon } from "@iconify/react";
 
 import {
   Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,13 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Sidebar,
@@ -36,7 +26,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Course, CourseItem, CourseStage, CourseType } from "@/types/courses";
 
-import { ItemList } from "./items";
 import { Stage } from "./stages";
 
 interface CourseData {
@@ -45,38 +34,9 @@ interface CourseData {
 }
 
 export function AppSidebar({ course, setCourse }: CourseData) {
-  const createNewItem = (stageIndex: number) => {
-    const courseItem: CourseItem = {
-      name: "Item Name",
-      position:
-        (course.courseStages?.[stageIndex].courseItems?.length || 0) + 1,
-      type: CourseType.TextContent,
-    };
-
-    // Ensure course.courseStages is defined and courseItems exists for the stage
-    if (course.courseStages && course.courseStages[stageIndex]) {
-      const updatedCourseStages = [...course.courseStages]; // Create a copy of the courseStages array
-      const updatedCourseItems = [
-        ...(course.courseStages[stageIndex].courseItems || []), // Use empty array if courseItems is undefined
-        courseItem, // Add the new item
-      ];
-
-      // Update the specific course stage
-      updatedCourseStages[stageIndex] = {
-        ...updatedCourseStages[stageIndex], // Copy the existing properties
-        courseItems: updatedCourseItems, // Replace courseItems with the updated array
-      };
-
-      // Update the course state
-      setCourse({
-        ...course, // Keep other properties of course unchanged
-        courseStages: updatedCourseStages, // Replace the updated courseStages
-      });
-    }
-  };
 
   return (
-    <Sidebar className="top-14 bg-mantle">
+    <Sidebar className="top-14 bg-mantle h-[100%-3.5rem]">
       <SidebarHeader className="bg-crust text-xl font-bold">
         Stages
       </SidebarHeader>

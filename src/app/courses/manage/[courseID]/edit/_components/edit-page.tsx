@@ -1,20 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useParams } from "next/navigation";
 
-import TiptapEditor from "@/components/tiptap/editor";
-import { Input } from "@/components/ui/input";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import API_URLS from "@/lib/api-urls";
+import { createContext, useState } from "react";
+
 import { Course } from "@/types/courses";
 
 import { AppSidebar } from "./edit-sidebar";
 
 interface CoursePageProps {
   courseData: Course;
+  children: React.ReactNode;
 }
 
-export default function CourseClientPage({ courseData }: CoursePageProps) {
+interface CourseContext {
+  course: Course;
+  setCourse: (course: Course) => void;
+}
+
+export const CourseContext = createContext<CourseContext | undefined>(
+  undefined,
+);
+
+export default function CourseClientPage({
+  courseData,
+  children,
+}: CoursePageProps) {
   const [course, setCourse] = useState<Course>(courseData);
 
   return (
@@ -23,7 +34,11 @@ export default function CourseClientPage({ courseData }: CoursePageProps) {
       <div className="w-full flex justify-center mt-10">
         <div className="container p-2">
           <div className="max-w-screen-lg mx-auto">
-            <TiptapEditor />
+            <CourseContext.Provider
+              value={{ course: course, setCourse: setCourse }}
+            >
+              {children}
+            </CourseContext.Provider>
           </div>
         </div>
       </div>

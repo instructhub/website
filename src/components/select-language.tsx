@@ -17,7 +17,6 @@ export default function SelectLanguage() {
 
   function onChange(value: string) {
     const locale = value as Locale;
-    console.log(locale);
     startTransition(() => {
       setUserLocale(locale);
     });

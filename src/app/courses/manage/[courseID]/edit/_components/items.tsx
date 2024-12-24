@@ -5,12 +5,15 @@ import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Icon } from "@iconify/react";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +21,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { Button } from "@/components/ui/button";
-import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Course, CourseItem } from "@/types/courses";
 

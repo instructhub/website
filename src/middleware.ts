@@ -21,7 +21,6 @@ async function refreshTokenFunc(accessToken: string | undefined, refreshToken: s
       },
     });
     const data = await res.json();
-    console.log(data); // 這裡會打印 API 回應的 JSON 內容
     if (res.ok) {
       return {
         success: true,
