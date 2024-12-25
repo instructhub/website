@@ -41,6 +41,7 @@ export interface CourseItem {
   name: string;
   active?: boolean;
   content?: string;
+  updated?: boolean;
 }
 
 // CourseImage type

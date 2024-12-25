@@ -1,3 +1,6 @@
+"use client";
+
+import { useParams, useRouter } from "next/navigation";
 import { z } from "zod";
 
 import { useState } from "react";
@@ -22,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { Course, CourseItem } from "@/types/courses";
 
 const itemNameSchema = z.object({
@@ -48,6 +52,12 @@ export function ItemList({
   itemIndex,
   stageIndex,
 }: ItemListProps) {
+  const params = useParams<{
+    courseID: string;
+    stageIndex: string;
+    itemIndex: string;
+  }>();
+  const router = useRouter();
   const [deleteModal, setDeleteModal] = useState(false);
   const [renameModal, setRenameModal] = useState(false);
   const {
@@ -190,9 +200,25 @@ export function ItemList({
     }
   };
 
+  const changeParams = () => {
+    router.push(`/courses/manage/${course.id}/edit/${stageIndex}/${itemIndex}`);
+  };
+
   return (
-    <div className="flex justify-between items-start hover:bg-base hover:border-l-4 hover:border-lavender border-l-4 border-crust rounded-md">
-      <div className="pl-5 p-2 rounded-md space-y-1 grow">
+    <div
+      className={cn(
+        "flex justify-between items-start hover:bg-base hover:border-l-4 hover:border-base border-l-4 border-crust rounded-md transition-colors duration-300 ease-in-out",
+        {
+          "bg-base border-l-4 border-lavender hover:border-lavender":
+            Number(params.stageIndex) === stageIndex &&
+            Number(params.itemIndex) === itemIndex,
+        },
+      )}
+    >
+      <div
+        className="pl-5 p-2 rounded-md space-y-1 grow select-none cursor-pointer"
+        onClick={() => changeParams()}
+      >
         <div className="text-text flex space-x-2">
           <Icon
             icon="lucide:book-open"
@@ -204,7 +230,6 @@ export function ItemList({
         </div>
         <p className="text-subtext0 text-xs">2 mins</p>
       </div>
-
       <DropdownMenu>
         <DropdownMenuTrigger className="focus:outline-none mt-2 mr-1 hover:text-lavender hover:cursor-pointer">
           <Icon icon="lucide:more-vertical" className="w-4 h-4 text-text" />
@@ -248,7 +273,6 @@ export function ItemList({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
       {/* Dialog for rename */}
       <Dialog open={renameModal} onOpenChange={setRenameModal}>
         <DialogContent>
@@ -293,7 +317,6 @@ export function ItemList({
           </form>
         </DialogContent>
       </Dialog>
-
       {/* Confirm Dialog for delete item */}
       <Dialog open={deleteModal} onOpenChange={() => setDeleteModal(false)}>
         <DialogContent>
@@ -306,7 +329,7 @@ export function ItemList({
             </DialogDescription>
             <DialogFooter>
               <Button variant="destructive" onClick={() => DeleteItem()}>
-                `` Delete
+                Delete
               </Button>
               <Button variant="secondary" onClick={() => setDeleteModal(false)}>
                 Cancel

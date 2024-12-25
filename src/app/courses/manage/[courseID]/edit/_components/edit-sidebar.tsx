@@ -6,9 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Icon } from "@iconify/react";
 
-import {
-  Accordion,
-} from "@/components/ui/accordion";
+import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Course, CourseItem, CourseStage, CourseType } from "@/types/courses";
@@ -34,9 +33,8 @@ interface CourseData {
 }
 
 export function AppSidebar({ course, setCourse }: CourseData) {
-
   return (
-    <Sidebar className="top-14 bg-mantle h-[100%-3.5rem]">
+    <Sidebar className="top-14 bg-crust h-[100%-3.5rem]">
       <SidebarHeader className="bg-crust text-xl font-bold">
         Stages
       </SidebarHeader>
@@ -55,6 +53,9 @@ export function AppSidebar({ course, setCourse }: CourseData) {
 
         <AddNewStageButton course={course} setCourse={setCourse} />
       </SidebarContent>
+      <SidebarFooter className="bg-crust">
+        <SaveButton course={course} setCourse={setCourse}/>
+      </SidebarFooter>
     </Sidebar>
   );
 }
@@ -171,5 +172,20 @@ export function AddNewStageButton({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function SaveButton({ course, setCourse }: CourseData) {
+  return (
+    <div className="bg-surface0 flex flex-col p-2 border rounded-xl">
+      <div className="font-semibold text-sm inline-flex flex-wrap items-center">
+        Remember to commit your edit! Once you leave, all your data will be
+        gone!
+      </div>
+      <Button className="m-2 grow font-bold flex">
+        <Icon icon="lucide:save" width="24" height="24" />
+        Save
+      </Button>
+    </div>
   );
 }

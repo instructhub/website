@@ -1,14 +1,12 @@
 "use client";
 
 import { all, createLowlight } from "lowlight";
-
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import {
-  Editor,
   EditorContent,
   ReactNodeViewRenderer,
   useEditor,
@@ -19,10 +17,19 @@ import "@/css/highlight.css";
 
 import CustomCodeBlock from "./custom-block";
 import Toolbar from "./toolbar";
+import { useEffect } from "react";
 
 const lowlight = createLowlight(all);
 
-export default function TiptapEditor() {
+interface TiptapEditorProps {
+  content?: string;  // Change defaultValue to value for controlled component
+  onUpdate?: (content: string) => void;
+}
+
+export default function TiptapEditor({
+  content = "",  // Default to empty string if no value is passed
+  onUpdate,
+}: TiptapEditorProps) {
   const codeBlockLowLight = CodeBlockLowlight.extend({
     addNodeView() {
       return ReactNodeViewRenderer(CustomCodeBlock);
@@ -31,6 +38,7 @@ export default function TiptapEditor() {
     lowlight: lowlight,
   });
 
+  // Create the editor instance with value prop as initial content
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -54,13 +62,20 @@ export default function TiptapEditor() {
       Underline,
     ],
 
-    content: "<p>Welcome to Tiptap</p>",
+    content: content, // Set the initial content to value from the parent
     editorProps: {
       attributes: {
         class: "relative focus:outline-none p-6 rounded-md min-h-36",
       },
     },
     immediatelyRender: false,
+
+    onUpdate: ({ editor }) => {
+      if (onUpdate) {
+        const content = editor.getHTML();
+        onUpdate(content);  // Notify the parent about the updated content
+      }
+    },
   });
 
   if (!editor) {

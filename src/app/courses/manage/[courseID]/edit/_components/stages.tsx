@@ -134,7 +134,7 @@ export function Stage({ stage, stageIndex, course, setCourse }: StageProps) {
   };
 
   return (
-    <AccordionItem key={stage.position} value={`item-${stage.position}`}>
+    <AccordionItem key={stage.position} value={`item-${stage.position}`} className="my-2">
       <div className="flex w-full grow">
         <AccordionTrigger className="hover:no-underline py-0 px-3 hover:bg-base text-left rounded-md w-full">
           <p className="px-3 py-1 text-left rounded-md text-md font-bold mr-1">
@@ -189,7 +189,7 @@ export function Stage({ stage, stageIndex, course, setCourse }: StageProps) {
         </DropdownMenu>
       </div>
 
-      <AccordionContent className="pl-4 flex-col pb-0">
+      <AccordionContent className="pl-4 flex-col pb-0 space-y-2">
         {stage.courseItems?.map((item, itemIndex) => (
           <ItemList
             course={course}
