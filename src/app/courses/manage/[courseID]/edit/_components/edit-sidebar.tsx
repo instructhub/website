@@ -1,13 +1,16 @@
+import decamelizeKeys from "decamelize-keys";
+import { Base64 } from "js-base64";
 import { z } from "zod";
 
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Icon } from "@iconify/react";
 
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +26,8 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { Course, CourseItem, CourseStage, CourseType } from "@/types/courses";
+import API_URLS from "@/lib/api-urls";
+import { Course, CourseStage, CourseType } from "@/types/courses";
 
 import { Stage } from "./stages";
 
@@ -54,7 +58,7 @@ export function AppSidebar({ course, setCourse }: CourseData) {
         <AddNewStageButton course={course} setCourse={setCourse} />
       </SidebarContent>
       <SidebarFooter className="bg-crust">
-        <SaveButton course={course} setCourse={setCourse}/>
+        <SaveButton course={course} setCourse={setCourse} />
       </SidebarFooter>
     </Sidebar>
   );
@@ -175,17 +179,196 @@ export function AddNewStageButton({
   );
 }
 
+const revisionSchema = z.object({
+  description: z
+    .string()
+    .min(2, "Description must be at least 2 characters long")
+    .max(100, "Description must not exceed 100 characters"),
+  verifyContent: z.boolean().refine((value) => value === true, {
+    message: "You must accept the terms and conditions",
+  }),
+});
+
+type revisionSchemaForm = z.infer<typeof revisionSchema>;
+
+interface AddNewStageButtonProps {
+  course: Course;
+  setCourse: (updatedCourse: Course) => void;
+}
+
 function SaveButton({ course, setCourse }: CourseData) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<revisionSchemaForm>({
+    resolver: zodResolver(revisionSchema),
+  });
+
+  const createNewRevision = async (data: revisionSchemaForm) => {
+    setIsLoading(true);
+    const updatedStages = course.courseStages?.map((stage) => ({
+      ...stage,
+      courseItems: stage.courseItems?.map((item) => ({
+        ...item,
+        content: item.updated
+          ? Base64.encode(item.content || "")
+          : item.content,
+      })),
+    }));
+
+    if (!updatedStages) {
+      return;
+    }
+
+    const payload = {
+      description: data.description,
+      stages: updatedStages,
+    };
+    const snakeCasePayload = decamelizeKeys(payload, { deep: true });
+
+    try {
+      const response = await fetch(
+        API_URLS.COURSES.CREATE_REVISION(course.id),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(snakeCasePayload),
+        },
+      );
+
+      if (!response.ok) {
+        setIsLoading(false);
+        setIsDialogOpen(false);
+        // TODO: need to change to a more clear warn alert
+        throw new Error(`Failed to save revision: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      const updatedStages = course.courseStages?.map((stage) => ({
+        ...stage,
+        courseItems: stage.courseItems?.map((item) => ({
+          ...item,
+          updated: false,
+        })),
+      }));
+
+      setCourse({ ...course, courseStages: updatedStages });
+      reset();
+      setIsLoading(false);
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error saving revision:", error);
+    }
+  };
+
   return (
     <div className="bg-surface0 flex flex-col p-2 border rounded-xl">
       <div className="font-semibold text-sm inline-flex flex-wrap items-center">
         Remember to commit your edit! Once you leave, all your data will be
         gone!
       </div>
-      <Button className="m-2 grow font-bold flex">
-        <Icon icon="lucide:save" width="24" height="24" />
-        Save
-      </Button>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Button
+          className="m-2 grow font-bold flex"
+          onClick={() => setIsDialogOpen(true)} // Open the dialog
+        >
+          <Icon icon="lucide:save" width="24" height="24" />
+          Save
+        </Button>
+
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-xl">Craete a new revision</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmit(createNewRevision)}>
+            <div className="w-full flex flex-col space-y-2 mb-5">
+              <div className="space-y-5 flex flex-col">
+                <div className="space-y-2">
+                  <div className="space-y-2">
+                    <label
+                      className="text-md font-semibold"
+                      htmlFor="stage-name"
+                    >
+                      Revision description
+                    </label>
+                    <Input
+                      {...register("description")}
+                      id="stage-name"
+                      placeholder="Enter revision description"
+                    />
+                    <p className="text-sm text-subtext0">
+                      The description should clearly describe what has been
+                      changed in this revision.
+                    </p>
+                    {errors.description && (
+                      <p className="pt-1 text-red text-sm">
+                        {errors.description.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="items-top flex space-x-2">
+                    <Controller
+                      name="verifyContent"
+                      control={control}
+                      defaultValue={false}
+                      render={({ field }) => (
+                        <Checkbox
+                          className="duration-300 ease-in-out"
+                          checked={field.value}
+                          onCheckedChange={(checked) =>
+                            field.onChange(checked === true)
+                          }
+                          id="verifyContent"
+                        />
+                      )}
+                    />
+                    <div className="grid gap-1.5 leading-none">
+                      <label
+                        htmlFor="terms1"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Have you reviewed everything you changed?
+                      </label>
+                      {errors.verifyContent && (
+                        <p className="pt-1 text-red text-sm">
+                          {errors.verifyContent.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="submit" size="sm" disabled={isLoading}>
+                {isLoading && (
+                  <Icon icon="lucide:loader-circle" className="animate-spin" />
+                )}
+                Commit
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => setIsDialogOpen(false)} // Close the dialog manually
+              >
+                Cancel
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

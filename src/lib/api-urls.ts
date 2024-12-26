@@ -29,6 +29,7 @@ export const API_URLS = {
     GET: (courseID: string) => `${BASE_URL}/courses/${courseID}`,
     GET_ITEM: (courseID: string, itemID: string) =>
       `${BASE_URL}/courses/${courseID}/${itemID}`,
+    CREATE_REVISION: (courseID: string) => `${BASE_URL}/courses/revision/${courseID}`
   },
 };
 

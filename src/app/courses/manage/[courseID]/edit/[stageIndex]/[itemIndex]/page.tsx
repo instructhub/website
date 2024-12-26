@@ -1,5 +1,6 @@
 "use client";
 
+import { Base64 } from "js-base64";
 import { notFound, useParams } from "next/navigation";
 import useSWR from "swr";
 
@@ -56,7 +57,7 @@ export default function CoursePage() {
   // Fetch and update course content if needed
   useEffect(() => {
     if (data && !item.content && !isContentUpdated) {
-      const decodedContent = atob(data.result);
+      const decodedContent = Base64.decode(data.result);
       const updatedStages = [...(course.courseStages || [])];
 
       if (
@@ -100,13 +101,13 @@ export default function CoursePage() {
     setEditorValue(newContent); // Update local state with the new content
 
     const updatedStages = [...(course.courseStages || [])];
-
     if (
       updatedStages[stageIndex] &&
       updatedStages[stageIndex].courseItems &&
       updatedStages[stageIndex].courseItems![itemIndex]
     ) {
       const updatedItems = [...updatedStages[stageIndex].courseItems!];
+      const oldUpdated = updatedItems[itemIndex].updated;
       updatedItems[itemIndex] = {
         ...updatedItems[itemIndex],
         content: newContent,
@@ -117,7 +118,6 @@ export default function CoursePage() {
         ...updatedStages[stageIndex],
         courseItems: updatedItems,
       };
-
       setCourse({
         ...course,
         courseStages: updatedStages,

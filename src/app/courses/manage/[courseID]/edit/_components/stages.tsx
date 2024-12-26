@@ -311,6 +311,7 @@ function NewItem({
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<newItemForm>({ resolver: zodResolver(newItemSchema) });
 
@@ -328,6 +329,7 @@ function NewItem({
     };
 
     setCourse({ ...course, courseStages: updatedStages });
+    reset()
     setNewItemModal(false);
   };
 
