@@ -3,6 +3,7 @@ import API_URLS from "@/lib/api-urls";
 import { Course, mapCourse } from "@/types/courses";
 
 import CourseClientPage from "./_components/edit-page";
+import { notFound } from "next/navigation";
 
 interface CoursePageProps {
   params: Promise<{ courseID: string }>;
@@ -22,7 +23,7 @@ export default async function CoursePage({
 
   const rawData = await response.json();
   if (!rawData.result) {
-    throw new Error("No course data found");
+    notFound()
   }
 
   const courseData: Course = mapCourse(rawData.result);
