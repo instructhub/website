@@ -24,8 +24,8 @@ const fetcher = async (url: string) => {
 export default function CoursePage() {
   const params = useParams<{
     courseID: string;
-    stageIndex: string;
-    itemIndex: string;
+    moduleIndex: string;
+    stepIndex: string;
   }>();
 
   const context = useContext(CourseContext);
@@ -35,50 +35,50 @@ export default function CoursePage() {
 
   const { course, setCourse } = context;
 
-  const stageIndex = Number(params.stageIndex);
-  const itemIndex = Number(params.itemIndex);
+  const moduleIndex = Number(params.moduleIndex);
+  const stepIndex = Number(params.stepIndex);
 
-  const item = course.courseStages?.[stageIndex]?.courseItems?.[itemIndex];
-  if (!item) {
+  const step = course.courseModules?.[moduleIndex]?.courseSteps?.[stepIndex];
+  if (!step) {
     notFound();
   }
 
   const { data, error, isLoading } = useSWR(
-    item?.id && item?.content == null
-      ? API_URLS.COURSES.GET_ITEM(params.courseID, item.id)
+    step?.id && step?.content == null
+      ? API_URLS.COURSES.GET_ITEM(params.courseID, step.id)
       : null,
     fetcher,
   );
 
   const [isContentUpdated, setIsContentUpdated] = useState(false);
-  const [editorValue, setEditorValue] = useState(item.content || ""); // Use state to control the value
+  const [editorValue, setEditorValue] = useState(step.content || ""); // Use state to control the value
   const [orginalContent, setOrginalContent] = useState(""); // Make it a state
 
   // Fetch and update course content if needed
   useEffect(() => {
-    if (data && !item.content && !isContentUpdated) {
+    if (data && !step.content && !isContentUpdated) {
       const decodedContent = Base64.decode(data.result);
-      const updatedStages = [...(course.courseStages || [])];
+      const updatedModules = [...(course.courseModules || [])];
 
       if (
-        updatedStages[stageIndex] &&
-        updatedStages[stageIndex].courseItems &&
-        updatedStages[stageIndex].courseItems![itemIndex]
+        updatedModules[moduleIndex] &&
+        updatedModules[moduleIndex].courseSteps &&
+        updatedModules[moduleIndex].courseSteps![stepIndex]
       ) {
-        const updatedItems = [...updatedStages[stageIndex].courseItems!];
-        updatedItems[itemIndex] = {
-          ...updatedItems[itemIndex],
+        const updatedSteps = [...updatedModules[moduleIndex].courseSteps!];
+        updatedSteps[stepIndex] = {
+          ...updatedSteps[stepIndex],
           content: decodedContent,
         };
 
-        updatedStages[stageIndex] = {
-          ...updatedStages[stageIndex],
-          courseItems: updatedItems,
+        updatedModules[moduleIndex] = {
+          ...updatedModules[moduleIndex],
+          courseSteps: updatedSteps,
         };
 
         setCourse({
           ...course,
-          courseStages: updatedStages,
+          courseModules: updatedModules,
         });
 
         setIsContentUpdated(true);
@@ -88,11 +88,11 @@ export default function CoursePage() {
     }
   }, [
     data,
-    item.content,
+    step.content,
     course,
     setCourse,
-    stageIndex,
-    itemIndex,
+    moduleIndex,
+    stepIndex,
     isContentUpdated,
   ]);
 
@@ -100,32 +100,32 @@ export default function CoursePage() {
   const handleEditorUpdate = (newContent: string) => {
     setEditorValue(newContent); // Update local state with the new content
 
-    const updatedStages = [...(course.courseStages || [])];
+    const updatedModules = [...(course.courseModules || [])];
     if (
-      updatedStages[stageIndex] &&
-      updatedStages[stageIndex].courseItems &&
-      updatedStages[stageIndex].courseItems![itemIndex]
+      updatedModules[moduleIndex] &&
+      updatedModules[moduleIndex].courseSteps &&
+      updatedModules[moduleIndex].courseSteps![stepIndex]
     ) {
-      const updatedItems = [...updatedStages[stageIndex].courseItems!];
-      const oldUpdated = updatedItems[itemIndex].updated;
-      updatedItems[itemIndex] = {
-        ...updatedItems[itemIndex],
+      const updatedSteps = [...updatedModules[moduleIndex].courseSteps!];
+      const oldUpdated = updatedSteps[stepIndex].updated;
+      updatedSteps[stepIndex] = {
+        ...updatedSteps[stepIndex],
         content: newContent,
         updated: orginalContent !== newContent, // Compare with the state version of orginalContent
       };
 
-      updatedStages[stageIndex] = {
-        ...updatedStages[stageIndex],
-        courseItems: updatedItems,
+      updatedModules[moduleIndex] = {
+        ...updatedModules[moduleIndex],
+        courseSteps: updatedSteps,
       };
       setCourse({
         ...course,
-        courseStages: updatedStages,
+        courseModules: updatedModules,
       });
     }
   };
 
-  if ((isLoading || !editorValue) && item.id !== undefined) {
+  if ((isLoading || !editorValue) && step.id !== undefined) {
     return (
       <div className="flex flex-col space-y-2  w-full min-h-screen">
         <div className="w-full min-h-14 justify-center items-center flex animate-pulse bg-surface0 rounded-md" />
@@ -140,7 +140,7 @@ export default function CoursePage() {
 
   return (
     <div>
-      <h1 className="font-bold text-3xl border-b-2">{item.name}</h1>
+      <h1 className="font-bold text-3xl border-b-2">{step.name}</h1>
       <TiptapEditor
         content={editorValue} // Pass the controlled value
         onUpdate={handleEditorUpdate} // Pass the update handler to update content

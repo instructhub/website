@@ -26,36 +26,36 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Course, CourseItem } from "@/types/courses";
+import { Course, CourseStep } from "@/types/courses";
 
-const itemNameSchema = z.object({
+const stepNameSchema = z.object({
   name: z
     .string()
-    .min(5, "Item name must be at least 5 characters long")
-    .max(100, "Item name must not exceed 50 characters"),
+    .min(5, "Step name must be at least 5 characters long")
+    .max(100, "Step name must not exceed 50 characters"),
 });
 
-type itemNameForm = z.infer<typeof itemNameSchema>;
+type stepNameForm = z.infer<typeof stepNameSchema>;
 
-interface ItemListProps {
+interface StepListProps {
   course: Course;
   setCourse: (updatedCourse: Course) => void;
-  item: CourseItem;
-  itemIndex: number;
-  stageIndex: number;
+  step: CourseStep;
+  stepIndex: number;
+  moduleIndex: number;
 }
 
-export function ItemList({
+export function StepList({
   course,
   setCourse,
-  item,
-  itemIndex,
-  stageIndex,
-}: ItemListProps) {
+  step,
+  stepIndex,
+  moduleIndex,
+}: StepListProps) {
   const params = useParams<{
     courseID: string;
-    stageIndex: string;
-    itemIndex: string;
+    moduleIndex: string;
+    stepIndex: string;
   }>();
   const router = useRouter();
   const [deleteModal, setDeleteModal] = useState(false);
@@ -65,153 +65,153 @@ export function ItemList({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<itemNameForm>({
-    resolver: zodResolver(itemNameSchema),
+  } = useForm<stepNameForm>({
+    resolver: zodResolver(stepNameSchema),
   });
 
-  const MoveItemUp = () => {
-    // Ensure course.courseStages and courseItems exist for the given stage and item indices
+  const MoveStepUp = () => {
+    // Ensure course.courseModules and courseSteps exist for the given module and step indices
     if (
-      course.courseStages &&
-      course.courseStages[stageIndex] &&
-      course.courseStages[stageIndex].courseItems &&
-      itemIndex > 0 // Ensure the item is not already at the top
+      course.courseModules &&
+      course.courseModules[moduleIndex] &&
+      course.courseModules[moduleIndex].courseSteps &&
+      stepIndex > 0 // Ensure the step is not already at the top
     ) {
-      const updatedCourseStages = [...course.courseStages]; // Create a copy of courseStages
-      const courseItems = [...updatedCourseStages[stageIndex].courseItems!]; // Copy courseItems for the stage
+      const updatedCourseModules = [...course.courseModules]; // Create a copy of courseModules
+      const courseSteps = [...updatedCourseModules[moduleIndex].courseSteps!]; // Copy courseSteps for the module
 
-      // Swap the current item with the previous one
-      const temp = courseItems[itemIndex];
-      courseItems[itemIndex] = courseItems[itemIndex - 1];
-      courseItems[itemIndex - 1] = temp;
+      // Swap the current step with the previous one
+      const temp = courseSteps[stepIndex];
+      courseSteps[stepIndex] = courseSteps[stepIndex - 1];
+      courseSteps[stepIndex - 1] = temp;
 
-      // Update positions for the swapped items
-      courseItems[itemIndex].position = itemIndex + 1;
-      courseItems[itemIndex - 1].position = itemIndex;
+      // Update positions for the swapped steps
+      courseSteps[stepIndex].position = stepIndex + 1;
+      courseSteps[stepIndex - 1].position = stepIndex;
 
-      // Update the specific courseStage with the reordered items
-      updatedCourseStages[stageIndex] = {
-        ...updatedCourseStages[stageIndex],
-        courseItems,
+      // Update the specific courseModule with the reordered steps
+      updatedCourseModules[moduleIndex] = {
+        ...updatedCourseModules[moduleIndex],
+        courseSteps,
       };
 
       // Update the course state
       setCourse({
         ...course,
-        courseStages: updatedCourseStages,
+        courseModules: updatedCourseModules,
       });
     }
   };
 
-  const MoveItemDown = () => {
-    // Ensure courseStages and courseItems exist, and itemIndex is valid
+  const MoveStepDown = () => {
+    // Ensure courseModules and courseSteps exist, and stepIndex is valid
     if (
-      course.courseStages &&
-      course.courseStages[stageIndex] &&
-      course.courseStages[stageIndex].courseItems &&
-      itemIndex < course.courseStages[stageIndex].courseItems!.length - 1
+      course.courseModules &&
+      course.courseModules[moduleIndex] &&
+      course.courseModules[moduleIndex].courseSteps &&
+      stepIndex < course.courseModules[moduleIndex].courseSteps!.length - 1
     ) {
-      const updatedCourseStages = [...course.courseStages]; // Create a copy of courseStages
-      const updatedCourseItems = [
-        ...(updatedCourseStages[stageIndex].courseItems || []),
-      ]; // Copy courseItems
+      const updatedCourseModules = [...course.courseModules]; // Create a copy of courseModules
+      const updatedCourseSteps = [
+        ...(updatedCourseModules[moduleIndex].courseSteps || []),
+      ]; // Copy courseSteps
 
-      // Swap the current item with the next one
-      const temp = updatedCourseItems[itemIndex];
-      updatedCourseItems[itemIndex] = updatedCourseItems[itemIndex + 1];
-      updatedCourseItems[itemIndex + 1] = temp;
+      // Swap the current step with the next one
+      const temp = updatedCourseSteps[stepIndex];
+      updatedCourseSteps[stepIndex] = updatedCourseSteps[stepIndex + 1];
+      updatedCourseSteps[stepIndex + 1] = temp;
 
-      // Update the course stage
-      updatedCourseStages[stageIndex] = {
-        ...updatedCourseStages[stageIndex],
-        courseItems: updatedCourseItems,
+      // Update the course module
+      updatedCourseModules[moduleIndex] = {
+        ...updatedCourseModules[moduleIndex],
+        courseSteps: updatedCourseSteps,
       };
 
       // Update the course state
       setCourse({
         ...course,
-        courseStages: updatedCourseStages,
+        courseModules: updatedCourseModules,
       });
     }
   };
 
-  const DeleteItem = () => {
-    // Ensure courseStages and courseItems exist
+  const DeleteStep = () => {
+    // Ensure courseModules and courseSteps exist
     if (
-      course.courseStages &&
-      course.courseStages[stageIndex] &&
-      course.courseStages[stageIndex].courseItems &&
-      itemIndex >= 0 &&
-      itemIndex < course.courseStages[stageIndex].courseItems!.length
+      course.courseModules &&
+      course.courseModules[moduleIndex] &&
+      course.courseModules[moduleIndex].courseSteps &&
+      stepIndex >= 0 &&
+      stepIndex < course.courseModules[moduleIndex].courseSteps!.length
     ) {
-      const updatedCourseStages = [...course.courseStages]; // Create a copy of courseStages
-      const updatedCourseItems = [
-        ...(updatedCourseStages[stageIndex].courseItems || []),
-      ]; // Copy courseItems
+      const updatedCourseModules = [...course.courseModules]; // Create a copy of courseModules
+      const updatedCourseSteps = [
+        ...(updatedCourseModules[moduleIndex].courseSteps || []),
+      ]; // Copy courseSteps
 
-      // Remove the item at the specified index
-      updatedCourseItems.splice(itemIndex, 1);
+      // Remove the step at the specified index
+      updatedCourseSteps.splice(stepIndex, 1);
 
-      // Update the course stage
-      updatedCourseStages[stageIndex] = {
-        ...updatedCourseStages[stageIndex],
-        courseItems: updatedCourseItems,
+      // Update the course module
+      updatedCourseModules[moduleIndex] = {
+        ...updatedCourseModules[moduleIndex],
+        courseSteps: updatedCourseSteps,
       };
 
       // Update the course state
       setCourse({
         ...course,
-        courseStages: updatedCourseStages,
+        courseModules: updatedCourseModules,
       });
     }
   };
 
-  const RenameItem = (data: { name: string }) => {
-    // Ensure courseStages and courseItems exist
+  const RenameStep = (data: { name: string }) => {
+    // Ensure courseModules and courseSteps exist
     if (
-      course.courseStages &&
-      course.courseStages[stageIndex] &&
-      course.courseStages[stageIndex].courseItems &&
-      itemIndex >= 0 &&
-      itemIndex < course.courseStages[stageIndex].courseItems!.length
+      course.courseModules &&
+      course.courseModules[moduleIndex] &&
+      course.courseModules[moduleIndex].courseSteps &&
+      stepIndex >= 0 &&
+      stepIndex < course.courseModules[moduleIndex].courseSteps!.length
     ) {
-      const updatedCourseStages = [...course.courseStages]; // Create a copy of courseStages
-      const updatedCourseItems = [
-        ...(updatedCourseStages[stageIndex].courseItems || []),
-      ]; // Copy courseItems
+      const updatedCourseModules = [...course.courseModules]; // Create a copy of courseModules
+      const updatedCourseSteps = [
+        ...(updatedCourseModules[moduleIndex].courseSteps || []),
+      ]; // Copy courseSteps
 
-      // Update the name of the item at the specified index
-      updatedCourseItems[itemIndex] = {
-        ...updatedCourseItems[itemIndex],
+      // Update the name of the step at the specified index
+      updatedCourseSteps[stepIndex] = {
+        ...updatedCourseSteps[stepIndex],
         name: data.name,
       };
 
-      // Update the course stage
-      updatedCourseStages[stageIndex] = {
-        ...updatedCourseStages[stageIndex],
-        courseItems: updatedCourseItems,
+      // Update the course module
+      updatedCourseModules[moduleIndex] = {
+        ...updatedCourseModules[moduleIndex],
+        courseSteps: updatedCourseSteps,
       };
       // Update the course state
       setCourse({
         ...course,
-        courseStages: updatedCourseStages,
+        courseModules: updatedCourseModules,
       });
       setRenameModal(false);
     }
   };
 
   const changeParams = () => {
-    router.push(`/courses/manage/${course.id}/edit/${stageIndex}/${itemIndex}`);
+    router.push(`/courses/manage/${course.id}/edit/${moduleIndex}/${stepIndex}`);
   };
 
   return (
     <div
       className={cn(
-        "flex justify-between items-start hover:bg-base hover:border-l-4 hover:border-base border-l-4 border-crust rounded-md transition-colors duration-300 ease-in-out",
+        "flex justify-between steps-start hover:bg-base hover:border-l-4 hover:border-base border-l-4 border-crust rounded-md transition-colors duration-300 ease-in-out",
         {
           "bg-base border-l-4 border-lavender hover:border-lavender":
-            Number(params.stageIndex) === stageIndex &&
-            Number(params.itemIndex) === itemIndex,
+            Number(params.moduleIndex) === moduleIndex &&
+            Number(params.stepIndex) === stepIndex,
         },
       )}
     >
@@ -226,7 +226,7 @@ export function ItemList({
             height="1rem"
             className="shrink-0 mt-0.5"
           />
-          <div className="text-wrap flex-1">{item.name}</div>
+          <div className="text-wrap flex-1">{step.name}</div>
         </div>
         <p className="text-subtext0 text-xs">2 mins</p>
       </div>
@@ -236,8 +236,8 @@ export function ItemList({
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem
-            disabled={itemIndex === 0}
-            onClick={() => MoveItemUp()}
+            disabled={stepIndex === 0}
+            onClick={() => MoveStepUp()}
           >
             <div className="flex space-x-1 items-center text-text">
               <Icon icon="lucide:arrow-up" />
@@ -246,10 +246,10 @@ export function ItemList({
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={
-              course.courseStages?.[stageIndex].courseItems?.length ===
-              itemIndex + 1
+              course.courseModules?.[moduleIndex].courseSteps?.length ===
+              stepIndex + 1
             }
-            onClick={() => MoveItemDown()}
+            onClick={() => MoveStepDown()}
           >
             <div className="flex space-x-1 items-center text-text">
               <Icon icon="lucide:arrow-down" />
@@ -277,21 +277,21 @@ export function ItemList({
       <Dialog open={renameModal} onOpenChange={setRenameModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-xl">Rename item</DialogTitle>
+            <DialogTitle className="text-xl">Rename step</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit(RenameItem)}>
+          <form onSubmit={handleSubmit(RenameStep)}>
             <div className="w-full flex flex-col space-y-2 mb-5">
               <div className="space-y-5 flex flex-col">
                 <div className="space-y-2">
-                  <label className="text-md font-semibold" htmlFor="stage-name">
-                    Stage name
+                  <label className="text-md font-semibold" htmlFor="module-name">
+                    Module name
                   </label>
                   <Input
                     {...register("name")}
                     autoFocus
-                    defaultValue={item.name}
-                    id="item-name"
-                    placeholder="Enter item name"
+                    defaultValue={step.name}
+                    id="step-name"
+                    placeholder="Enter step name"
                   />
                   {errors.name && (
                     <p className="pt-1 text-red text-sm">
@@ -317,7 +317,7 @@ export function ItemList({
           </form>
         </DialogContent>
       </Dialog>
-      {/* Confirm Dialog for delete item */}
+      {/* Confirm Dialog for delete step */}
       <Dialog open={deleteModal} onOpenChange={() => setDeleteModal(false)}>
         <DialogContent>
           <DialogHeader>
@@ -328,7 +328,7 @@ export function ItemList({
               edition.
             </DialogDescription>
             <DialogFooter>
-              <Button variant="destructive" onClick={() => DeleteItem()}>
+              <Button variant="destructive" onClick={() => DeleteStep()}>
                 Delete
               </Button>
               <Button variant="secondary" onClick={() => setDeleteModal(false)}>

@@ -4,18 +4,18 @@ export interface Course {
   creator: string; // uint64 -> number
   name: string; // string remains the same
   description?: string; // string | undefined for optional fields
-  courseStages?: CourseStage[]; // Foreign key relationship
+  courseModules?: CourseModule[]; // Foreign key relationship
 }
 
-// CourseStage type
-export interface CourseStage {
+// CourseModule type
+export interface CourseModule {
   id?: string; // uint64 -> number
   courseId: string; // uint64 -> number
   position: number; // int -> number
   name: string; // string remains the same
   active?: boolean; // *bool -> boolean | undefined
   course?: Course; // Foreign key relationship
-  courseItems?: CourseItem[]; // Foreign key relationship
+  courseSteps?: CourseStep[]; // Foreign key relationship
 }
 
 // CourseType enum
@@ -32,10 +32,10 @@ export const courseTypeMap: Record<string, CourseType> = {
   question: CourseType.QuestionContent,
 };
 
-// CourseItem type
-export interface CourseItem {
+// CourseStep type
+export interface CourseStep {
   id?: string;
-  stageId?: string;
+  moduleId?: string;
   position: number;
   type: CourseType;
   name: string;
@@ -60,25 +60,25 @@ export function mapCourse(json: any): Course {
     creator: json.creator,
     name: json.name,
     description: json.description,
-    courseStages: json.course_stages?.map(mapCourseStage),
+    courseModules: json.course_modules?.map(mapCourseModule),
   };
 }
 
-function mapCourseStage(json: any): CourseStage {
+function mapCourseModule(json: any): CourseModule {
   return {
     id: json.id,
     courseId: json.course_id,
     position: json.position,
     name: json.name,
     active: json.active,
-    courseItems: json.course_items?.map(mapCourseItem),
+    courseSteps: json.course_steps?.map(mapCourseStep),
   };
 }
 
-function mapCourseItem(json: any): CourseItem {
+function mapCourseStep(json: any): CourseStep {
   return {
     id: json.id,
-    stageId: json.stage_id,
+    moduleId: json.module_id,
     position: json.position,
     type: courseTypeMap[json.type] || CourseType.TextContent,
     name: json.name,

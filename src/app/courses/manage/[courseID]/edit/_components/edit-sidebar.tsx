@@ -27,9 +27,9 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import API_URLS from "@/lib/api-urls";
-import { Course, CourseStage, CourseType } from "@/types/courses";
+import { Course, CourseModule, CourseType } from "@/types/courses";
 
-import { Stage } from "./stages";
+import { Module } from "./modules";
 
 interface CourseData {
   course: Course;
@@ -39,23 +39,23 @@ interface CourseData {
 export function AppSidebar({ course, setCourse }: CourseData) {
   return (
     <Sidebar className="top-14 bg-crust h-[100%-3.5rem]">
-      <SidebarHeader className="bg-crust text-xl font-bold">
-        Stages
+      <SidebarHeader className="bg-crust text-xl font-bold truncate">
+        {course.name}
       </SidebarHeader>
       <SidebarContent className="bg-crust p-2 pl-6">
         <Accordion type="multiple" defaultValue={[`item-1`]}>
-          {course.courseStages?.map((stage, stageIndex) => (
-            <Stage
-              stage={stage}
-              stageIndex={stageIndex}
+          {course.courseModules?.map((module, moduleIndex) => (
+            <Module
+              module={module}
+              moduleIndex={moduleIndex}
               course={course}
               setCourse={setCourse}
-              key={stage.position}
-            ></Stage>
+              key={module.position}
+            ></Module>
           ))}
         </Accordion>
 
-        <AddNewStageButton course={course} setCourse={setCourse} />
+        <AddNewModuleButton course={course} setCourse={setCourse} />
       </SidebarContent>
       <SidebarFooter className="bg-crust">
         <SaveButton course={course} setCourse={setCourse} />
@@ -64,25 +64,25 @@ export function AppSidebar({ course, setCourse }: CourseData) {
   );
 }
 
-const stageNameSchema = z.object({
+const moduleNameSchema = z.object({
   name: z
     .string()
-    .min(2, "Stage name must be at least 2 characters long")
-    .max(50, "Stage name must not exceed 50 characters"),
+    .min(2, "Module name must be at least 2 characters long")
+    .max(50, "Module name must not exceed 50 characters"),
 });
 
-type stageNameForm = z.infer<typeof stageNameSchema>;
+type moduleNameForm = z.infer<typeof moduleNameSchema>;
 
-interface AddNewStageButtonProps {
+interface AddNewModuleButtonProps {
   course: Course;
   setCourse: (updatedCourse: Course) => void;
 }
 
 // FIXME: need to limit the maxlength
-export function AddNewStageButton({
+export function AddNewModuleButton({
   course,
   setCourse,
-}: AddNewStageButtonProps) {
+}: AddNewModuleButtonProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control dialog visibility
 
   const {
@@ -90,29 +90,29 @@ export function AddNewStageButton({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<stageNameForm>({
-    resolver: zodResolver(stageNameSchema),
+  } = useForm<moduleNameForm>({
+    resolver: zodResolver(moduleNameSchema),
   });
 
-  const createNewStage = (data: { name: string }) => {
-    // Create a new course stage
-    const newCourseStage: CourseStage = {
+  const createNewModule = (data: { name: string }) => {
+    // Create a new course module
+    const newCourseModule: CourseModule = {
       courseId: course.id,
       name: data.name, // Use the name entered by the user
-      position: (course.courseStages?.length || 0) + 1, // Set the position
-      courseItems: [], // Initialize with an empty array
+      position: (course.courseModules?.length || 0) + 1, // Set the position
+      courseSteps: [], // Initialize with an empty array
     };
 
-    // Update the course stages
-    const updatedCourseStages = [
-      ...(course.courseStages || []),
-      newCourseStage,
+    // Update the course modules
+    const updatedCourseModules = [
+      ...(course.courseModules || []),
+      newCourseModule,
     ];
 
     // Update the course state
     setCourse({
       ...course,
-      courseStages: updatedCourseStages,
+      courseModules: updatedCourseModules,
     });
 
     // Reset form, close dialog, and stop loading
@@ -128,29 +128,29 @@ export function AddNewStageButton({
       >
         <div className="flex space-x-2 items-center justify-center text-overlay0">
           <Icon icon="lucide:square-plus" className="w-4 h-4" />
-          <div className="font-bold text-sm">New stage</div>
+          <div className="font-bold text-sm">New module</div>
         </div>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-xl">Create new stage</DialogTitle>
+          <DialogTitle className="text-xl">Create new module</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(createNewStage)}>
+        <form onSubmit={handleSubmit(createNewModule)}>
           <div className="w-full flex flex-col space-y-2 mb-5">
             <div className="space-y-5 flex flex-col">
               <div className="space-y-2">
-                <label className="text-md font-semibold" htmlFor="stage-name">
-                  Stage name
+                <label className="text-md font-semibold" htmlFor="module-name">
+                  Module name
                 </label>
                 <Input
                   {...register("name")}
-                  id="stage-name"
-                  placeholder="Enter stage name"
+                  id="module-name"
+                  placeholder="Enter module name"
                 />
                 <p className="text-sm text-subtext0">
-                  Stage names should be clear and unique to make them easy to
+                  Module names should be clear and unique to make them easy to
                   identify.
                 </p>
                 {errors.name && (
@@ -191,7 +191,7 @@ const revisionSchema = z.object({
 
 type revisionSchemaForm = z.infer<typeof revisionSchema>;
 
-interface AddNewStageButtonProps {
+interface AddNewModuleButtonProps {
   course: Course;
   setCourse: (updatedCourse: Course) => void;
 }
@@ -211,23 +211,21 @@ function SaveButton({ course, setCourse }: CourseData) {
 
   const createNewRevision = async (data: revisionSchemaForm) => {
     setIsLoading(true);
-    const updatedStages = course.courseStages?.map((stage) => ({
-      ...stage,
-      courseItems: stage.courseItems?.map((item) => ({
-        ...item,
-        content: item.updated
-          ? Base64.encode(item.content || "")
-          : item.content,
+    const updatedModules = course.courseModules?.map((module) => ({
+      ...module,
+      courseSteps: module.courseSteps?.map((step) => ({
+        ...step,
+        content: step.content ? Base64.encode(step.content) : null
       })),
     }));
 
-    if (!updatedStages) {
+    if (!updatedModules) {
       return;
     }
 
     const payload = {
       description: data.description,
-      stages: updatedStages,
+      modules: updatedModules,
     };
     const snakeCasePayload = decamelizeKeys(payload, { deep: true });
 
@@ -252,15 +250,15 @@ function SaveButton({ course, setCourse }: CourseData) {
 
       const result = await response.json();
 
-      const updatedStages = course.courseStages?.map((stage) => ({
-        ...stage,
-        courseItems: stage.courseItems?.map((item) => ({
-          ...item,
+      const updatedModules = course.courseModules?.map((module) => ({
+        ...module,
+        courseSteps: module.courseSteps?.map((step) => ({
+          ...step,
           updated: false,
         })),
       }));
 
-      setCourse({ ...course, courseStages: updatedStages });
+      setCourse({ ...course, courseModules: updatedModules });
       reset();
       setIsLoading(false);
       setIsDialogOpen(false);
@@ -297,13 +295,13 @@ function SaveButton({ course, setCourse }: CourseData) {
                   <div className="space-y-2">
                     <label
                       className="text-md font-semibold"
-                      htmlFor="stage-name"
+                      htmlFor="module-name"
                     >
                       Revision description
                     </label>
                     <Input
                       {...register("description")}
-                      id="stage-name"
+                      id="module-name"
                       placeholder="Enter revision description"
                     />
                     <p className="text-sm text-subtext0">

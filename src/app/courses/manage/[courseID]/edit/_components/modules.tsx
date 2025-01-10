@@ -27,143 +27,143 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Course, CourseItem, CourseStage, CourseType } from "@/types/courses";
+import { Course, CourseStep, CourseModule, CourseType } from "@/types/courses";
 
-import { ItemList } from "./items";
+import { StepList } from "./steps";
 
-const stageNameSchema = z.object({
+const moduleNameSchema = z.object({
   name: z
     .string()
-    .min(2, "Stage name must be at least 2 characters long")
-    .max(50, "Stage name must not exceed 50 characters"),
+    .min(2, "Module name must be at least 2 characters long")
+    .max(50, "Module name must not exceed 50 characters"),
 });
 
-type stageNameForm = z.infer<typeof stageNameSchema>;
+type moduleNameForm = z.infer<typeof moduleNameSchema>;
 
-interface StageProps {
-  stage: CourseStage;
-  stageIndex: number;
+interface ModuleProps {
+  module: CourseModule;
+  moduleIndex: number;
   course: Course;
   setCourse: (course: Course) => void;
 }
 
-export function Stage({ stage, stageIndex, course, setCourse }: StageProps) {
-  const [newItemModal, setNewItemModal] = useState(false);
+export function Module({ module, moduleIndex, course, setCourse }: ModuleProps) {
+  const [newStepModal, setNewStepModal] = useState(false);
   const [renameModal, setRenameModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<stageNameForm>({ resolver: zodResolver(stageNameSchema) });
+  } = useForm<moduleNameForm>({ resolver: zodResolver(moduleNameSchema) });
 
-  // Helper function for stage operations
-  const updateStages = (
-    updateFn: (stages: CourseStage[]) => CourseStage[],
+  // Helper function for module operations
+  const updateModules = (
+    updateFn: (modules: CourseModule[]) => CourseModule[],
     validator?: () => boolean,
   ) => {
-    if (!course?.courseStages || (validator && !validator())) return;
+    if (!course?.courseModules || (validator && !validator())) return;
     setCourse({
       ...course,
-      courseStages: updateFn([...course.courseStages]),
+      courseModules: updateFn([...course.courseModules]),
     });
   };
 
-  // Move stage up
-  const moveStageUp = () => {
-    updateStages(
-      (stages) => {
-        [stages[stageIndex], stages[stageIndex - 1]] = [
-          stages[stageIndex - 1],
-          stages[stageIndex],
+  // Move module up
+  const moveModuleUp = () => {
+    updateModules(
+      (modules) => {
+        [modules[moduleIndex], modules[moduleIndex - 1]] = [
+          modules[moduleIndex - 1],
+          modules[moduleIndex],
         ];
-        return stages;
+        return modules;
       },
-      () => stageIndex > 0,
+      () => moduleIndex > 0,
     );
   };
 
-  // Move stage down
-  const moveStageDown = () => {
-    updateStages(
-      (stages) => {
-        [stages[stageIndex], stages[stageIndex + 1]] = [
-          stages[stageIndex + 1],
-          stages[stageIndex],
+  // Move module down
+  const moveModuleDown = () => {
+    updateModules(
+      (modules) => {
+        [modules[moduleIndex], modules[moduleIndex + 1]] = [
+          modules[moduleIndex + 1],
+          modules[moduleIndex],
         ];
-        return stages;
+        return modules;
       },
-      () => stageIndex < (course?.courseStages?.length ?? 0) - 1,
+      () => moduleIndex < (course?.courseModules?.length ?? 0) - 1,
     );
   };
 
-  // Create new item
-  const createNewItem = (data: { name: string }) => {
-    updateStages((stages) => {
-      const newItem: CourseItem = {
+  // Create new step
+  const createNewStep = (data: { name: string }) => {
+    updateModules((modules) => {
+      const newStep: CourseStep = {
         name: data.name,
-        position: (stages[stageIndex].courseItems?.length || 0) + 1,
+        position: (modules[moduleIndex].courseSteps?.length || 0) + 1,
         type: CourseType.TextContent,
       };
 
-      stages[stageIndex] = {
-        ...stages[stageIndex],
-        courseItems: [...(stages[stageIndex].courseItems || []), newItem],
+      modules[moduleIndex] = {
+        ...modules[moduleIndex],
+        courseSteps: [...(modules[moduleIndex].courseSteps || []), newStep],
       };
-      return stages;
+      return modules;
     });
-    setNewItemModal(false);
+    setNewStepModal(false);
   };
 
-  // Rename stage
-  const renameStage = (data: { name: string }) => {
-    updateStages((stages) => {
-      stages[stageIndex] = {
-        ...stages[stageIndex],
+  // Rename module
+  const renameModule = (data: { name: string }) => {
+    updateModules((modules) => {
+      modules[moduleIndex] = {
+        ...modules[moduleIndex],
         name: data.name,
       };
-      return stages;
+      return modules;
     });
     setRenameModal(false);
   };
 
-  // Delete stage
-  const deleteStage = () => {
-    updateStages((stages) => stages.filter((_, index) => index !== stageIndex));
+  // Delete module
+  const deleteModule = () => {
+    updateModules((modules) => modules.filter((_, index) => index !== moduleIndex));
     setDeleteModal(false);
   };
 
   return (
-    <AccordionItem key={stage.position} value={`item-${stage.position}`} className="my-2">
+    <AccordionItem key={module.position} value={`step-${module.position}`} className="my-2">
       <div className="flex w-full grow">
-        <AccordionTrigger className="hover:no-underline py-0 px-3 hover:bg-base text-left rounded-md w-full">
+        <AccordionTrigger className="hover:no-underline py-0 px-3 hover:bg-base text-left rounded-md w-full mb-2">
           <p className="px-3 py-1 text-left rounded-md text-md font-bold mr-1">
-            {stage.name}
+            {module.name}
           </p>
         </AccordionTrigger>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex-none focus:outline-none mr-1 hover:text-lavender hover:cursor-pointer justify-center items-center">
+          <DropdownMenuTrigger className="flex-none focus:outline-none mr-1 hover:text-lavender hover:cursor-pointer justify-center steps-center">
             <Icon icon="lucide:more-vertical" className="w-4 h-4 text-text" />
           </DropdownMenuTrigger>
 
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setNewItemModal(true)}>
+            <DropdownMenuItem onClick={() => setNewStepModal(true)}>
               <div className="flex space-x-1 items-center text-green">
                 <Icon icon="lucide:copy-plus" />
-                <p>New item</p>
+                <p>New step</p>
               </div>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem disabled={stageIndex === 0} onClick={moveStageUp}>
+            <DropdownMenuItem disabled={moduleIndex === 0} onClick={moveModuleUp}>
               <div className="flex space-x-1 items-center text-text">
                 <Icon icon="lucide:arrow-up" />
                 <p>Move up</p>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem
-              disabled={course.courseStages?.length === stageIndex + 1}
-              onClick={moveStageDown}
+              disabled={course.courseModules?.length === moduleIndex + 1}
+              onClick={moveModuleDown}
             >
               <div className="flex space-x-1 items-center text-text">
                 <Icon icon="lucide:arrow-down" />
@@ -190,44 +190,44 @@ export function Stage({ stage, stageIndex, course, setCourse }: StageProps) {
       </div>
 
       <AccordionContent className="pl-4 flex-col pb-0 space-y-2">
-        {stage.courseItems?.map((item, itemIndex) => (
-          <ItemList
+        {module.courseSteps?.map((step, stepIndex) => (
+          <StepList
             course={course}
             setCourse={setCourse}
-            item={item}
-            itemIndex={itemIndex}
-            stageIndex={stageIndex}
-            key={item.position}
+            step={step}
+            stepIndex={stepIndex}
+            moduleIndex={moduleIndex}
+            key={step.position}
           />
         ))}
       </AccordionContent>
 
-      {/* TODO: insert new item */}
-      <NewItem
-        stage={stage}
-        stageIndex={stageIndex}
+      {/* TODO: insert new step */}
+      <NewStep
+        module={module}
+        moduleIndex={moduleIndex}
         course={course}
         setCourse={setCourse}
-        newItemModal={newItemModal}
-        setNewItemModal={setNewItemModal}
+        newStepModal={newStepModal}
+        setNewStepModal={setNewStepModal}
       />
       {/* Rename Dialog */}
       <Dialog open={renameModal} onOpenChange={setRenameModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Rename stage</DialogTitle>
+            <DialogTitle>Rename module</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit(renameStage)}>
+          <form onSubmit={handleSubmit(renameModule)}>
             <div className="w-full flex flex-col space-y-2 mb-5">
               <div className="space-y-2">
-                <label className="text-md font-semibold" htmlFor="stage-name">
-                  Stage name
+                <label className="text-md font-semibold" htmlFor="module-name">
+                  Module name
                 </label>
                 <Input
                   {...register("name")}
-                  defaultValue={stage.name}
-                  id="stage-name"
-                  placeholder="Enter stage name"
+                  defaultValue={module.name}
+                  id="module-name"
+                  placeholder="Enter module name"
                 />
                 {errors.name && (
                   <p className="pt-1 text-red text-sm">{errors.name.message}</p>
@@ -255,16 +255,16 @@ export function Stage({ stage, stageIndex, course, setCourse }: StageProps) {
       <Dialog open={deleteModal} onOpenChange={setDeleteModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete stage</DialogTitle>
+            <DialogTitle>Delete module</DialogTitle>
           </DialogHeader>
           <div className="py-3">
             <p>
-              Are you sure you want to delete this stage? This action cannot be
+              Are you sure you want to delete this module? This action cannot be
               undone.
             </p>
           </div>
           <DialogFooter>
-            <Button onClick={deleteStage} variant="destructive" size="sm">
+            <Button onClick={deleteModule} variant="destructive" size="sm">
               Delete
             </Button>
             <Button
@@ -282,73 +282,73 @@ export function Stage({ stage, stageIndex, course, setCourse }: StageProps) {
   );
 }
 
-const newItemSchema = z.object({
+const newStepSchema = z.object({
   name: z
     .string()
-    .min(2, "New item must be at least 2 characters long")
-    .max(50, "New item must not exceed 50 characters"),
+    .min(2, "New step must be at least 2 characters long")
+    .max(50, "New step must not exceed 50 characters"),
 });
 
-type newItemForm = z.infer<typeof newItemSchema>;
+type newStepForm = z.infer<typeof newStepSchema>;
 
-interface NewItemProps {
-  stage: CourseStage;
-  stageIndex: number;
+interface NewStepProps {
+  module: CourseModule;
+  moduleIndex: number;
   course: Course;
   setCourse: (course: Course) => void;
-  setNewItemModal: (newItemModal: boolean) => void;
-  newItemModal: boolean;
+  setNewStepModal: (newStepModal: boolean) => void;
+  newStepModal: boolean;
 }
 
-function NewItem({
-  stage,
-  stageIndex,
+function NewStep({
+  module,
+  moduleIndex,
   course,
   setCourse,
-  setNewItemModal,
-  newItemModal,
-}: NewItemProps) {
+  setNewStepModal,
+  newStepModal,
+}: NewStepProps) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<newItemForm>({ resolver: zodResolver(newItemSchema) });
+  } = useForm<newStepForm>({ resolver: zodResolver(newStepSchema) });
 
-  const createNewItem = (data: { name: string }) => {
-    const newItem: CourseItem = {
+  const createNewStep = (data: { name: string }) => {
+    const newStep: CourseStep = {
       name: data.name,
-      position: (stage.courseItems?.length || 0) + 1,
+      position: (module.courseSteps?.length || 0) + 1,
       type: CourseType.TextContent,
     };
 
-    const updatedStages = [...(course.courseStages || [])];
-    updatedStages[stageIndex] = {
-      ...stage,
-      courseItems: [...(stage.courseItems || []), newItem],
+    const updatedModules = [...(course.courseModules || [])];
+    updatedModules[moduleIndex] = {
+      ...module,
+      courseSteps: [...(module.courseSteps || []), newStep],
     };
 
-    setCourse({ ...course, courseStages: updatedStages });
+    setCourse({ ...course, courseModules: updatedModules });
     reset()
-    setNewItemModal(false);
+    setNewStepModal(false);
   };
 
   return (
-    <Dialog open={newItemModal} onOpenChange={setNewItemModal}>
+    <Dialog open={newStepModal} onOpenChange={setNewStepModal}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Item</DialogTitle>
+          <DialogTitle>Create New Step</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(createNewItem)}>
+        <form onSubmit={handleSubmit(createNewStep)}>
           <div className="w-full flex flex-col space-y-2 mb-5">
             <div className="space-y-2">
-              <label className="text-md font-semibold" htmlFor="item-name">
-                Item name
+              <label className="text-md font-semibold" htmlFor="step-name">
+                Step name
               </label>
               <Input
                 {...register("name")}
-                id="item-name"
-                placeholder="Enter item name"
+                id="step-name"
+                placeholder="Enter step name"
               />
               {errors.name && (
                 <p className="pt-1 text-red text-sm">{errors.name.message}</p>
@@ -357,13 +357,13 @@ function NewItem({
           </div>
           <DialogFooter>
             <Button type="submit" size="sm">
-              Create Item
+              Create Step
             </Button>
             <Button
               type="button"
               size="sm"
               variant="secondary"
-              onClick={() => setNewItemModal(false)}
+              onClick={() => setNewStepModal(false)}
             >
               Cancel
             </Button>

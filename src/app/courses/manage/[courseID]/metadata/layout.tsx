@@ -23,15 +23,6 @@ export default function CoursesMetadata({
               <Icon icon="lucide:circle" className="text-lg" />
               <p className="text-md text-text">Target learners</p>
             </button>
-
-            <button className="p-2 pl-3 flex space-x-2 items-center hover:border-l-4 hover:border-lavender border-l-4 border-base">
-              <Icon icon="lucide:circle" className="text-lg" />
-              <p className="text-md text-text">Detail</p>
-            </button>
-            <button className="p-2 pl-3 flex space-x-2 items-center hover:border-l-4 hover:border-lavender border-l-4 border-base">
-              <Icon icon="lucide:circle" className="text-lg" />
-              <p className="text-md text-text">Landing page</p>
-            </button>
           </div>
         </div>
 

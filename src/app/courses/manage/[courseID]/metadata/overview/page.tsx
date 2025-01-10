@@ -27,7 +27,6 @@ export default function CoursesHomePage() {
             <div className="space-y-2">
               <p className="text-md font-semibold">Description</p>
               <Input placeholder="Example: In this course your will learn about how to use golang to create a fully functional webapp" />
-
               <p className="text-md text-subtext0">
                 The description should be sort and can read in 10 seconds
               </p>

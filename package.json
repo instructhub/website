@@ -43,6 +43,7 @@
     "@tiptap/pm": "^2.10.3",
     "@tiptap/react": "^2.10.3",
     "@tiptap/starter-kit": "^2.10.3",
+    "@tiptap/static-renderer": "3.0.0-next.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookies-next": "^5.0.2",
